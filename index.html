@@ -20,7 +20,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',s
 .tab-icon{font-size:24px}
 .screen{display:none;padding:16px}
 .screen.active{display:block}
-.page-head{padding:20px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.app-title{background:linear-gradient(135deg,#1a6e4e,#1D9E75);padding:16px 16px 14px;text-align:center}
+.app-title .dragon{font-size:36px;display:block;margin-bottom:4px}
+.app-title h1{font-size:16px;font-weight:700;color:#fff;letter-spacing:.03em}
+.app-title p{font-size:11px;color:rgba(255,255,255,0.75);margin-top:2px}
+.page-head{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between}
 .page-head h1{font-size:22px;font-weight:700}
 .btn-add{width:38px;height:38px;border-radius:50%;background:var(--green);border:none;color:#fff;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(29,158,117,0.35)}
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:16px}
@@ -106,6 +110,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',s
 </head>
 <body>
 <div class="app-wrap">
+  <div class="app-title">
+    <span class="dragon">🐲</span>
+    <h1>畫糖文化體驗課程</h1>
+    <p>✨ 課程展演管理系統 ✨</p>
+  </div>
   <div class="page-head">
     <h1 id="page-title">總覽</h1>
     <button class="btn-add" id="btn-add" onclick="toggleAddMenu()">+</button>
@@ -512,14 +521,21 @@ async function copyConfirmMsg(){
   const msg=document.getElementById('confirm-preview')._msg||'';
   const balance=document.getElementById('confirm-preview')._balance||0;
   const pax=document.getElementById('confirm-preview')._pax||0;
+  // 先複製訊息
+  navigator.clipboard.writeText(msg).catch(()=>{});
+  // 再嘗試儲存，失敗不影響複製
   b.final_pax=pax; b.balance=balance; b.status='confirmed';
-  if(await upsert(b)){
-    navigator.clipboard.writeText(msg).catch(()=>{});
-    closeModal('confirm-modal');
-    closeModal('detail-modal');
+  const ok=await upsert(b);
+  closeModal('confirm-modal');
+  closeModal('detail-modal');
+  if(ok){
     showToast('確認單已複製，狀態更新為已收尾款 ✓');
-    renderAll();
+    const idx=books.findIndex(x=>x.id===b.id);
+    if(idx>=0)books[idx]=b;
+  } else {
+    showToast('確認單已複製！（離線模式，上線後再同步）');
   }
+  renderAll();
 }
 
 // 訊息產生
