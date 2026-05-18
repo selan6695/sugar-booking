@@ -155,7 +155,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',s
     <div class="sec-div">客戶資料</div>
     <div class="row2">
       <div class="field"><label>中文姓名 *</label><input type="text" id="m-name-zh" placeholder="王小明" autocomplete="off"></div>
-      <div class="field"><label>英文名</label><input type="text" id="m-name-en" placeholder="Mimi" autocomplete="off"></div>
+      <div class="field"><label>平台名字／暱稱</label><input type="text" id="m-name-en" placeholder="Messenger／IG／LINE 名字" autocomplete="off"></div>
     </div>
     <div class="field"><label>手機號碼</label><input type="tel" id="m-phone" placeholder="09XX-XXX-XXX"></div>
     <div class="sec-div">課程資訊</div>
@@ -730,7 +730,9 @@ function parseAndFill(){
   };
 
   const name=get('姓名');
-  const lineid=get('LINE ID');
+  const platform=get('聯絡平台');
+  const lineid=get('平台名字')||get('LINE ID');
+  const contactInfo=platform?`${platform}：${lineid}`:lineid;
   const phone=get('電話');
   const regionRaw=get('地區');
   const addr=get('地址');
@@ -768,7 +770,7 @@ function parseAndFill(){
   editingId=null; sessionCount=0;
   document.getElementById('modal-title').textContent='新增預約（客戶資料）';
   document.getElementById('m-name-zh').value=name;
-  document.getElementById('m-name-en').value=lineid; // LINE ID 填入英文名欄位
+  document.getElementById('m-name-en').value=contactInfo;
   document.getElementById('m-phone').value=phone;
   document.getElementById('m-region').value=regionKey;
   document.getElementById('m-addr').value=addr;
